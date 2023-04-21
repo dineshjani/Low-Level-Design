@@ -1,0 +1,134 @@
+#  class 
+
+# game 
+# play()
+
+
+# board:
+#     cells
+#     board[x][y]
+#     initlize()
+#     set_cell()
+#     solve()
+#     print_board()
+
+
+
+# player-
+#  name
+class Player:
+    def __init__(self,player_name):
+        self.name = player_name
+        
+
+class Board:
+    def __init__(self,x_axis,y_axis):
+        self.x_axis = x_axis
+        self.y_axis = y_axis
+        self.board = [[0 for i in range(0,y_axis)] for j in range(0,x_axis)]
+    
+    def print_board(self):
+        
+        for i in range(o,x_axis):
+            for j in range(0,y_axis):
+                print(board[i][j])
+            print(" ")
+            
+    def set_cell(self,x,y,value):
+        self.board[x][y] = value
+    
+    def solve(self,x,y):
+        i = x
+        flag = True
+        first_value = self.board[i][0]
+        
+        for j in range(0,y_axis):
+            if first_value != self.board[i][j]:
+                flag = False
+                break
+        if flag == True and first_value!=0:
+            return True
+                
+        i = y
+        flag = True
+        first_value = self.board[0][i]
+        
+        for j in range(0,y_axis):
+            if first_value != self.board[j][i]:
+                flag = False
+                break
+        if flag == True and first_value!=0:
+            return True     
+                
+        first_value = self.board[0][0]
+        flag = True
+        for i in range(1,x_axis):
+            if first_value != self.board[i][i]:
+                flag = False
+                break
+        if flag == True and first_value!=0:
+            return True
+        
+        first_value = self.board[0][y_axis-1]
+        i = 0
+        j = y_axis-1
+        while j>0:
+            i = i+1
+            j = j-1
+            if first_value != self.board[i][j]:
+                flag = False
+                break
+        if flag == True and first_value != 0:
+            return True
+        return False
+        
+    
+class Game:
+    def __init__(self,player_1,player_2,x_axis,y_axis):
+        self.board = Board(x_axis,y_axis)
+        self.player1= player_1
+        self.player2 = player_2
+        self.turn_index = 0
+        
+    def validate_input(self,x,y):
+        if x>=0 and x < self.board.x_axis and y>=0 and y < self.board.y_axis and self.board.board[x][y] == 0:
+            return True
+        return False
+        
+    def play(self):
+        x,y = 0,0
+        while not self.board.solve(int(x),int(y)):
+            if self.turn_index ==0:
+                print("please insert indexs of cell and value for player {0}".format(self.player1.name))
+                x,y,value = input().split(" ")
+                if not self.validate_input(int(x),int(y)):
+                    print("please insert right indexs of cell and value for player {0}".format(self.player1.name))
+                    x,y,value = input().split(" ")
+                self.board.set_cell(int(x),int(y),value)
+            else :
+                print("please insert indexs of cell and value for player {0}".format(self.player2.name))
+                x,y,value = input().split(" ")
+                if not self.validate_input(int(x),int(y)):
+                    print("please insert right indexs of cell and value for player {0}".format(self.player2.name))
+                    x,y,value = input().split(" ")
+                self.board.set_cell(int(x),int(y),value)
+            self.turn_index = (self.turn_index+1)%2
+        if self.turn_index == 0:
+            print("wineer is {0}".format(self.player2.name))
+        else :
+            print("wineer is {0}".format(self.player1.name))
+                
+player_1 = Player("A")
+player_2 = Player("B")
+print("dimension of board")
+x_axis,y_axis = list(map(int,input().split(" ")))
+game_instance =  Game(player_1,player_2,x_axis,y_axis)
+game_instance.play()
+                
+            
+                    
+                    
+            
+            
+      
+        
