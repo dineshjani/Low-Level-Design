@@ -1,0 +1,147 @@
+class Account:
+    class AccountType:
+        GUEST = 0
+        MEMBER = 1
+        ADMIN = 2
+        MODERATOR = 3
+
+    def __init__(self, name, type_):
+        self.name_ = name
+        self.type_ = type_
+
+    def search_and_view_questions(self):
+        print(f"{self.name_} is searching and viewing questions.")
+
+    def ask_question(self):
+        print(f"{self.name_} is asking a question.")
+
+    def earn_reputation(self, reputation):
+        print(f"{self.name_} earned {reputation} reputation.")
+
+    def get_name(self):
+        return self.name_
+
+class Notification:
+    def __init__(self, account):
+        self.account_ = account
+
+    def send_notification(self):
+        print(f"Notification sent to {self.account_.get_name()}.")
+
+    def assign_badge(self, reputation):
+        print(f"Badge assigned to {self.account_.get_name()} with {reputation} reputation.")
+
+class Badge:
+    def __init__(self, name, description):
+        self.name_ = name
+        self.description_ = description
+
+class Photo:
+    def __init__(self, file_name):
+        self.file_name_ = file_name
+
+class Bounty:
+    def __init__(self, reputation=0, expiry_date=""):
+        self.reputation_ = reputation
+        self.expiry_date_ = expiry_date
+
+class Comment:
+    def __init__(self, text):
+        self.text_ = text
+        self.view_count_ = 0
+        self.vote_count_ = 0
+        self.flag_count_ = 0
+
+class Answer:
+    def __init__(self, text, account):
+        self.text_ = text
+        self.account_ = account
+        self.view_count_ = 0
+        self.vote_count_ = 0
+        self.flag_count_ = 0
+        self.accepted_ = False
+        self.comments_ = []
+        self.photos_ = []
+
+class Tag:
+    def __init__(self, name, description):
+        self.name_ = name
+        self.description_ = description
+        self.daily_frequency_ = 0
+        self.weekly_frequency_ = 0
+
+class Question:
+    def __init__(self, title, description, account):
+        self.title_ = title
+        self.description_ = description
+        self.account_ = account
+        self.view_count_ = 0
+        self.vote_count_ = 0
+        self.status_ = "open"
+        self.closed_remarks_ = ""
+        self.answers_ = []
+        self.comments_ = []
+        self.tags_ = []
+        self.photos_ = []
+        self.badges_ = []
+        self.bounty_ = Bounty()
+
+if __name__ == "__main__":
+    member = Account("Suraj", Account.AccountType.MEMBER)
+    member.ask_question()
+    member.earn_reputation(100)
+
+    notification = Notification(member)
+    notification.send_notification()
+    notification.assign_badge(200)
+
+    question = Question("What is Stack Overflow?", "Can someone explain what Stack Overflow is and how it works?", member)
+    question.view_count_ = 50
+question.vote_count_ = 20
+question.status_ = "closed"
+question.closed_remarks_ = "Duplicate"
+question.bounty_ = Bounty(100, "2023-02-01")
+
+answer1 = Answer("Stack Overflow is a question and answer site for professional and enthusiast programmers.", member)
+answer1.view_count_ = 30
+answer1.vote_count_ = 15
+answer1.accepted_ = True
+
+comment1 = Comment("Great answer!")
+comment1.view_count_ = 10
+comment1.vote_count_ = 5
+answer1.comments_.append(comment1)
+
+photo1 = Photo("stack_overflow_photo.jpg")
+answer1.photos_.append(photo1)
+
+question.answers_.append(answer1)
+
+tag1 = Tag("programming", "Questions related to programming")
+tag1.daily_frequency_ = 100
+tag1.weekly_frequency_ = 500
+
+badge1 = Badge("Best Answer", "Awarded to the best answer of a question")
+
+question.tags_.append(tag1)
+question.badges_.append(badge1)
+
+print("Question Title: ", question.title_)
+print("Question Description: ", question.description_)
+print("Question View Count: ", question.view_count_)
+print("Question Vote Count: ", question.vote_count_)
+print("Question Status: ", question.status_)
+print("Question Closed Remarks: ", question.closed_remarks_)
+print("Question Bounty: ", question.bounty_.reputation_, " reputation until ", question.bounty_.expiry_date_)
+print("Answer View Count: ", answer1.view_count_)
+print("Answer Vote Count: ", answer1.vote_count_)
+print("Answer Accepted: ", "Yes" if answer1.accepted_ else "No")
+print("Comment View Count: ", comment1.view_count_)
+print("Comment Vote Count: ", comment1.vote_count_)
+print("Tag Name: ", tag1.name_)
+print("Tag Description: ", tag1.description_)
+print("Tag Daily Frequency: ", tag1.daily_frequency_)
+print("Tag Weekly Frequency: ", tag1.weekly_frequency_)
+print("Badge Name: ", badge1.name_)
+print("Badge Description: ", badge1.description_)
+
