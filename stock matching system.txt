@@ -1,0 +1,73 @@
+from enum import Enum
+from queue import PriorityQueue
+
+class OrderType(Enum):
+    BUY = 1
+    SELL = 2
+
+class Stock:
+    def __init__(self, symbol):
+        self.symbol = symbol
+    
+    def getSymbol(self):
+        return self.symbol
+
+class Order:
+    def __init__(self, orderId, symbol, price, quantity, orderType):
+        self.orderId = orderId
+        self.symbol = symbol
+        self.price = price
+        self.quantity = quantity
+        self.orderType = orderType
+
+class MatchingSystem:
+    def __init__(self):
+        self.buyOrders = PriorityQueue()
+        self.sellOrders = PriorityQueue()
+        self.matchingStrategy = None
+
+    def setMatchingStrategy(self, strategy):
+        self.matchingStrategy = strategy
+
+    def addBuyOrder(self, order):
+        self.buyOrders.put((-order.price, order))
+
+    def addSellOrder(self, order):
+        self.sellOrders.put((order.price, order))
+
+    def matchOrders(self):
+        if self.matchingStrategy is None:
+            raise ValueError("Matching strategy not set")
+
+        while not self.buyOrders.empty() and not self.sellOrders.empty():
+            buy_order = self.buyOrders.get()[1]
+            sell_order = self.sellOrders.get()[1]
+            if self.matchingStrategy.matchOrders(buy_order, sell_order):
+                print(f"Matched Order: {buy_order.orderId} - {sell_order.orderId}")
+
+class MatchingStrategy:
+    def matchOrders(self, buy_order, sell_order):
+        raise NotImplementedError("Matching strategy not implemented")
+
+class NearestMatchingStrategy(MatchingStrategy):
+    def matchOrders(self, buy_order, sell_order):
+        return abs(buy_order.price - sell_order.price) < 0.001
+
+# Example usage
+if __name__ == "__main__":
+    stock = Stock("AAPL")
+    matching_system = MatchingSystem()
+    matching_system.setMatchingStrategy(NearestMatchingStrategy())
+
+    buy_order_1 = Order(1, "AAPL", 100.0, 10, OrderType.BUY)
+    buy_order_2 = Order(2, "AAPL", 105.0, 5, OrderType.BUY)
+
+    sell_order_1 = Order(3, "AAPL", 102.0, 7, OrderType.SELL)
+    sell_order_2 = Order(4, "AAPL", 103.5, 8, OrderType.SELL)
+
+    matching_system.addBuyOrder(buy_order_1)
+    matching_system.addBuyOrder(buy_order_2)
+    matching_system.addSellOrder(sell_order_1)
+    matching_system.addSellOrder(sell_order_2)
+
+    matching_system.matchOrders()
