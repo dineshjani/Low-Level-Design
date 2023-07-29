@@ -1,0 +1,130 @@
+import uuid
+import time
+
+# Placeholder for the video call implementation
+def initiate_video_call():
+    print("Initiating video call...")
+    time.sleep(5)
+    print("Video call connected.")
+
+# Placeholder for the face recognition implementation
+def perform_face_match():
+    print("Performing face match...")
+    time.sleep(4)
+    # Assuming face match is successful in this example
+    print("Face match successful.")
+    return True
+
+# Placeholder for notifying the user
+def notify_user_kyc_completed(user_id):
+    print(f"Notifying user {user_id}: KYC completed successfully.")
+
+class User:
+    def __init__(self, name, email, phone_number):
+        self.user_id = str(uuid.uuid4())
+        self.name = name
+        self.email = email
+        self.phone_number = phone_number
+
+class KYCSession:
+    def __init__(self, user_id, expert_id):
+        self.session_id = str(uuid.uuid4())
+        self.user_id = user_id
+        self.expert_id = expert_id
+        self.status = 'pending'
+        self.consent_received = False
+        self.ID_document_verified = False
+        self.face_match_result = False
+        self.start_time = None
+        self.end_time = None
+        self.video_record_url = None
+
+class KYCExpert:
+    def __init__(self, name, designation, slots_calendar=None):
+        self.expert_id = str(uuid.uuid4())
+        self.name = name
+        self.designation = designation
+        self.slots_calendar = slots_calendar if slots_calendar is not None else {}
+
+    def book_slot(self, date, start_time, end_time):
+        # Check for overlapping slots
+        if date not in self.slots_calendar:
+            self.slots_calendar[date] = []
+
+        for slot in self.slots_calendar[date]:
+            if start_time < slot.end_time and end_time > slot.start_time:
+                return False  # Slot overlaps with an existing booked slot
+
+        self.slots_calendar[date].append(KYCSlot(start_time, end_time))
+        return True
+
+class LiveKYCSystem:
+    def __init__(self):
+        self.users = {}
+        self.experts = {}
+        self.sessions = {}
+
+    def register_user(self, name, email, phone_number):
+        user = User(name, email, phone_number)
+        self.users[user.user_id] = user
+        return user.user_id
+
+    def schedule_video_call(self, user_id, date, start_time, end_time):
+        if user_id not in self.users:
+            raise ValueError("Invalid user_id.")
+        user = self.users[user_id]
+
+        available_experts = [expert for expert in self.experts.values() if expert.slots > 0]
+        if not available_experts:
+            raise ValueError("No available experts for video call.")
+
+        # Select the expert with the most available slots
+        expert = max(available_experts, key=lambda e: e.slots)
+
+        if expert.book_slot(date, start_time, end_time):
+            session = KYCSession(user_id, expert.expert_id)
+            self.sessions[session.session_id] = session
+
+            expert.slots -= 1  # Reduce the available slots for the selected expert
+
+            initiate_video_call()
+            session.start_time = time.time()
+            session.status = 'in_progress'
+
+            # Placeholder for taking consent from the user
+            time.sleep(2)
+            session.consent_received = True
+
+            # Placeholder for ID document verification
+            time.sleep(3)
+            session.ID_document_verified = True
+
+            # Placeholder for face matching
+            session.face_match_result = perform_face_match()
+
+            session.end_time = time.time()
+            session.status = 'completed'
+
+            if session.face_match_result:
+                notify_user_kyc_completed(user_id)
+        else:
+            raise ValueError("The selected slot overlaps with an existing booking.")
+
+# Example usage:
+if __name__ == "__main__":
+    live_kyc_system = LiveKYCSystem()
+
+    # Dummy data for users and experts
+    user_id = live_kyc_system.register_user("John Doe", "john@example.com", "1234567890")
+    expert = KYCExpert("KYC Expert", "KYC Specialist")
+    live_kyc_system.experts[expert.expert_id] = expert
+
+    # Schedule a video call session with slot preference
+    date = "2023-07-30"
+    start_time = "14:00"
+    end_time = "14:30"
+    try:
+        live_kyc_system.schedule_video_call(user_id, date, start_time, end_time)
+        print("Video call scheduled successfully.")
+    except ValueError as e:
+        print(f"Error: {e}")
