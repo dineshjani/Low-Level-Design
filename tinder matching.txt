@@ -1,0 +1,73 @@
+from datetime import datetime
+
+class Person:
+    def __init__(self, name, dob, points):
+        self.name = name
+        self.dob = dob
+        self.points = points
+
+    def similarity(self, person2):
+        similarity = 0
+
+        # Compare name similarity
+        if self.name and person2.name:
+            similarity += self._similarity_string(person2.name)
+
+        # Compare DOB similarity
+        if self.dob and person2.dob:
+            similarity += self._similarity_date(person2.dob)
+
+        # Compare points similarity
+        if self.points is not None and person2.points is not None:
+            similarity += self._similarity_number(person2.points)
+
+        return similarity
+
+    def _similarity_string(self, str2):
+        return self.name == str2
+
+    def _similarity_date(self, date2):
+        return abs((self.dob - date2).days)
+
+    def _similarity_number(self, num2):
+        return abs(self.points - num2)
+
+class PersonSet:
+    def __init__(self, persons):
+        self.persons = persons
+
+    def find_best_match(self, person):
+        best_match = None
+        best_similarity = float('inf')
+
+        for p in self.persons:
+            if person is not p:
+                similarity = person.similarity(p)
+                if similarity < best_similarity:
+                    best_similarity = similarity
+                    best_match = p
+
+        return best_match
+
+    def pair_persons(self, other_set):
+        pairs = {}
+
+        for person in self.persons:
+            best_match = other_set.find_best_match(person)
+            if best_match:
+                pairs[person] = best_match
+                other_set.remove_person(best_match)
+
+        return pairs
+
+    def remove_person(self, person):
+        self.persons.remove(person)
+
+if __name__ == "__main__":
+    person1_set = PersonSet([Person("Alex", datetime(2021, 12, 3), 100.0), Person("Bob", datetime(2009, 12, 3), 200.2)])
+    person2_set = PersonSet([Person("Alexis", datetime(2021, 11, 3), 101.0), Person("Bobbie", datetime(2009, 3, 14), 200.5)])
+
+    matched_pairs = person1_set.pair_persons(person2_set)
+
+    for person1, person2 in matched_pairs.items():
+        print(f"{person1.name} matches with {person2.name}")
