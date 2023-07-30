@@ -1,0 +1,82 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.contacts = []
+
+class Contact:
+    def __init__(self, first_name, last_name, phone_number):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.phone_number = phone_number
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.phone_number}"
+
+class ContactManager:
+    def __init__(self):
+        self.contacts = []
+        self.first_name_trie = TrieNode()
+        self.last_name_trie = TrieNode()
+
+    def add_contact(self, contact):
+        self.contacts.append(contact)
+
+        # Update first name trie
+        current_node = self.first_name_trie
+        for char in contact.first_name.lower():
+            if char not in current_node.children:
+                current_node.children[char] = TrieNode()
+            current_node = current_node.children[char]
+            current_node.contacts.append(contact)
+
+        # Update last name trie
+        current_node = self.last_name_trie
+        for char in contact.last_name.lower():
+            if char not in current_node.children:
+                current_node.children[char] = TrieNode()
+            current_node = current_node.children[char]
+            current_node.contacts.append(contact)
+
+    def search_contacts_by_prefix(self, prefix, trie):
+        current_node = trie
+        for char in prefix.lower():
+            if char not in current_node.children:
+                return []
+            current_node = current_node.children[char]
+        return current_node.contacts
+
+    def search_by_first_name(self, first_name):
+        return self.search_contacts_by_prefix(first_name, self.first_name_trie)
+
+    def search_by_last_name(self, last_name):
+        return self.search_contacts_by_prefix(last_name, self.last_name_trie)
+
+# Example usage:
+if __name__ == "__main__":
+    contact_manager = ContactManager()
+
+    contact1 = Contact("John", "Doe", "1234567890")
+    contact2 = Contact("Jane", "Smith", "9876543210")
+    contact3 = Contact("Alice", "Johnson", "2345678901")
+
+    contact_manager.add_contact(contact1)
+    contact_manager.add_contact(contact2)
+    contact_manager.add_contact(contact3)
+
+    # Prefix search for first name
+    prefix_search_results = contact_manager.search_by_first_name("Ja")
+    print("Prefix search results for 'Ja':")
+    for contact in prefix_search_results:
+        print(contact)
+
+    # Prefix search for last name
+    prefix_search_results = contact_manager.search_by_last_name("Do")
+    print("\nPrefix search results for 'Do':")
+    for contact in prefix_search_results:
+        print(contact)
+
+    # Prefix search for phone number
+    prefix_search_results = contact_manager.search_contacts_by_prefix("234", contact_manager.first_name_trie)
+    print("\nPrefix search results for phone number prefix '234':")
+    for contact in prefix_search_results:
+        print(contact)
