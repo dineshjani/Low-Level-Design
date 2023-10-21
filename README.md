@@ -6,3 +6,5 @@ https://www.linkedin.com/pulse/decorator-pattern-recursively-adding-responsibili
 https://github.com/SauravP97/Saurav-Low-Level-Design-Template
 
 https://medium.com/@madhankumaravelu93/low-level-system-design-parking-lot-design-part-i-7567d510da1d
+
+https://github.com/tssovi/grokking-the-object-oriented-design-interview
